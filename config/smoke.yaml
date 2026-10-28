@@ -4,8 +4,8 @@ metrics_path: experiments/metrics.json
 compute_path: experiments/compute.json
 eval_split: test
 cpu_threads: 4
-train_limit: 512
-eval_limit: 256
+train_limit: 8000
+eval_limit: 1000
 embedding_dim: 32
 hidden_dim: 64
 batch_size: 64
