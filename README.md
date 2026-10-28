@@ -19,6 +19,7 @@ Before computing contrastive losses (e.g., InfoNCE) or nearest-neighbor queries,
 ## CPU/Replay Fallback: 
 To keep within predefined hardware and resource boundaries, features will be extracted via an encoder for only 10,000 clips. Of these clips, 8000 will be utilized for training, 1000 will be used for validation, and 1000 for testing. After extracting feature embeddings, they will be cached as lightweight Numpy arrays. During training, cached embeddings can be rapidly replayed from system memory or disk on standard CPU infrastructure without requiring repeated forward passes through heavy convolutional backbones.
 
+## Bibliography
 [1] Girdhar, Rohit, et al. "ImageBind one embedding space to bind them all." 2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). IEEE, 2023.
 [2] Chen, Honglie, et al. "Vggsound: A large-scale audio-visual dataset." ICASSP 2020-2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2020.
 [3] Du, Chenzhuang, et al. "On uni-modal feature learning in supervised multi-modal learning." International Conference on Machine Learning. PMLR, 2023.
