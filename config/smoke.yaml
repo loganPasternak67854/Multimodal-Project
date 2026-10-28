@@ -1,0 +1,14 @@
+run_id: smoke
+data_path: data/cached_features.npz
+metrics_path: experiments/metrics.json
+compute_path: experiments/compute.json
+eval_split: test
+cpu_threads: 4
+train_limit: 512
+eval_limit: 256
+embedding_dim: 32
+hidden_dim: 64
+batch_size: 64
+lr: 0.001
+epochs: 2
+seed: 42
