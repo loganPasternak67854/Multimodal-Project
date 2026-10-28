@@ -23,3 +23,4 @@ To keep within predefined hardware and resource boundaries, features will be ext
 [2] Chen, Honglie, et al. "Vggsound: A large-scale audio-visual dataset." ICASSP 2020-2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2020.
 [3] Du, Chenzhuang, et al. "On uni-modal feature learning in supervised multi-modal learning." International Conference on Machine Learning. PMLR, 2023.
 
+# Multimodal-Project
