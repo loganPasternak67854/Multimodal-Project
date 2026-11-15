@@ -13,7 +13,6 @@ def safe_l2_normalize(x: torch.Tensor, dim: int = -1, eps: float = 1e-12) -> tor
 
 class SharedProjectionHead(nn.Module):
     """Maps 768-d HT-SAT and BERT local sequences into a 512-d shared semantic space."""
-
     def __init__(self, audio_in_dim: int = 768, text_in_dim: int = 768, shared_dim: int = 512):
         super().__init__()
         self.audio_proj = nn.Sequential(
@@ -64,18 +63,18 @@ class DirectionalLGMMStream(nn.Module):
         M, L_q, D = query_seq.shape
         N, L_c, _ = context_seq.shape
 
-        # 1. Local-Local Interaction: s_{ij} = f_{q,i}^T f_{c,j} -> [M, N, L_q, L_c]
+        # Local-Local Interaction: s_{ij} = f_{q,i}^T f_{c,j} -> [M, N, L_q, L_c]
         sim_matrix = torch.einsum("mld,nkd->mnlk", query_seq, context_seq)
         self.checker.check_cosine_bounds(sim_matrix, "local_local_sim")
 
-        # Normalize s_{ij} across the query length dimension (Eq. 2 in Wang et al.)
+        # Normalize s_{ij} across the query length dimension 
         s_bar = sim_matrix / torch.sqrt(torch.sum(sim_matrix ** 2, dim=2, keepdim=True) + 1e-8)
 
         # Softmax along context length dimension (L_c)
         weights = F.softmax(s_bar / self.tau_w, dim=-1)
         self.checker.check_attention_distribution(weights, "local_attention_weights", dim=-1)
 
-        # 2. Local-Global Interaction: v_{q,i}^c = sum_j w_{ij} f_{c,j} -> [M, N, L_q, D]
+        # Local-Global Interaction: v_{q,i}^c = sum_j w_{ij} f_{c,j} -> [M, N, L_q, D]
         context_aware_query = torch.einsum("mnlk,nkd->mnld", weights, context_seq)
         context_aware_query_norm = safe_l2_normalize(context_aware_query, dim=-1)
         self.checker.check_l2_normalized(context_aware_query_norm, "context_aware_query")
@@ -85,7 +84,7 @@ class DirectionalLGMMStream(nn.Module):
         local_global_sim = torch.sum(query_expanded * context_aware_query_norm, dim=-1)
         self.checker.check_cosine_bounds(local_global_sim, "local_global_sim")
 
-        # 3. Global-Global Interaction via LogSumExp (LSE) pooling (Eq. 5)
+        # Global-Global Interaction via LogSumExp (LSE) pooling
         # S_g = (1 / lambda) * logsumexp(lambda * S(f_{q,i}, v_{q,i}^c), dim=-1)
         S_g = torch.logsumexp(self.lse_lambda * local_global_sim, dim=-1) / self.lse_lambda
         self.checker.check_finite(S_g, "global_directional_S_g")
@@ -116,8 +115,8 @@ class BidirectionalLGMM(nn.Module):
         self.t2a_stream = DirectionalLGMMStream(tau_w, lse_lambda, self.checker)
 
     def compute_cross_modal_sim(self, f_a: torch.Tensor, f_t: torch.Tensor) -> torch.Tensor:
-        s_a2t = self.a2t_stream(f_a, f_t)             # [B, B]
-        s_t2a = self.t2a_stream(f_t, f_a).transpose(0, 1)  # [B, B] aligned to (A_m, T_n)
+        s_a2t = self.a2t_stream(f_a, f_t)             
+        s_t2a = self.t2a_stream(f_t, f_a).transpose(0, 1)  
         s_sym = 0.5 * (s_a2t + s_t2a)
         self.checker.check_finite(s_sym, "symmetric_S_g_AT")
         return s_sym
@@ -137,8 +136,7 @@ class BidirectionalLGMM(nn.Module):
 
 
 class AsymmetricLGMM(nn.Module):
-    """Baseline 1: Original unidirectional LGMM (Wang et al., ICASSP 2024)."""
-
+    """Baseline 1: Original unidirectional LGMM"""
     def __init__(
         self,
         audio_in_dim: int = 768,
@@ -163,7 +161,6 @@ class AsymmetricLGMM(nn.Module):
 
 class MMTBaseline(nn.Module):
     """Baseline 2: Lightweight Multi-Modal Transformer global encoder baseline."""
-
     def __init__(self, audio_in_dim: int = 768, text_in_dim: int = 768, shared_dim: int = 512):
         super().__init__()
         self.proj = SharedProjectionHead(audio_in_dim, text_in_dim, shared_dim)
