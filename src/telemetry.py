@@ -13,7 +13,6 @@ class ExperimentTracker:
     Tracks wall-clock execution time, memory consumption, and ECE 532 fail-closed
     verification records, writing a schema-valid JSON receipt into 'experiments/'.
     """
-
     def __init__(self, experiment_name: str, model_type: str, config: dict, output_dir: str = "experiments"):
         self.experiment_name = experiment_name
         self.model_type = model_type
